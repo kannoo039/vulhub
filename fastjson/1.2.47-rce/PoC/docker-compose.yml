@@ -1,0 +1,30 @@
+version: '3'
+services:
+        app:
+                build: ./app
+                container_name: app
+                ports:
+                        - "8080:8080"
+                networks:
+                        - vulnet
+
+        rmi:
+                build: ./rmi
+                container_name: rmi
+                ports:
+                        - "9999:9999"
+                networks:
+                        - vulnet
+
+        attacker:
+                build: ./attacker
+                container_name: attacker
+                depends_on:
+                        - app
+                        - rmi
+                networks:
+                        - vulnet
+
+networks:
+        vulnet:
+                driver: bridge

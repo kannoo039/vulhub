@@ -1,0 +1,36 @@
+version: '3.7'
+services:
+        app:
+                image: vulhub/fastjson:1.2.45
+                container_name: app
+                ports:
+                        - "8090:8090"
+                networks:
+                        - poc_vulnet
+
+
+
+        socat:
+                image: alpine/socat
+                container_name: socat
+                command: tcp-listen:8090,fork,reuseaddr tcp-connect:app:8090
+                ports:
+                        - "8091:8090"
+                networks:
+                        - poc_vulnet
+                depends_on:
+                        - app
+
+        attacker:
+                build: ./attacker
+                container_name: attacker
+                ports:
+                        - "8000:8000"
+                        - "9999:9999"
+                networks: 
+                       - poc_vulnet
+                depends_on:
+                        - socat
+networks:
+        poc_vulnet:
+                driver: bridge
